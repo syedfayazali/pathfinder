@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
+import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { useDbStatus } from "@/hooks/useDbStatus";
 import { SetupBanner } from "@/components/layout/SetupBanner";
 import { Button } from "@/components/ui/button";
@@ -38,9 +39,9 @@ const nav = [
 ];
 
 export function AppLayout() {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { dataMode } = useDbStatus();
-  const name = user?.display_name || user?.email?.split("@")[0] || "there";
+  const name = profile?.display_name || user?.display_name || user?.email?.split("@")[0] || "there";
 
   return (
     <div className="flex min-h-screen">
@@ -76,8 +77,14 @@ export function AppLayout() {
           })}
         </nav>
         <div className="mt-auto border-t border-border pt-4">
-          <p className="truncate px-2 text-xs text-muted-foreground">Good to see you, {name}</p>
-          <Button variant="ghost" size="sm" className="mt-2 w-full justify-start gap-2" onClick={signOut}>
+          <div className="flex items-center gap-3 px-2">
+            <ProfileAvatar src={profile?.avatar_url} name={name} size="md" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">{name}</p>
+              <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
+            </div>
+          </div>
+          <Button variant="ghost" size="sm" className="mt-3 w-full justify-start gap-2" onClick={signOut}>
             <LogOut className="h-4 w-4" />
             Sign out
           </Button>

@@ -56,6 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             target_role: null,
             target_company: null,
             linkedin_url: null,
+            current_company: null,
+            current_position: null,
           };
           localStore.set(stored);
         }
@@ -101,6 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             target_role: null,
             target_company: null,
             linkedin_url: null,
+            current_company: null,
+            current_position: null,
           };
           localStore.set(data);
         }
@@ -141,6 +145,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           target_role: null,
           target_company: null,
           linkedin_url: null,
+          current_company: null,
+          current_position: null,
         };
         localStore.set(data);
         setUser({ id: uid, email, display_name: data.profile.display_name });

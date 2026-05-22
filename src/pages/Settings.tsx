@@ -15,6 +15,8 @@ import {
 } from "@/services/gmail";
 import { useToast } from "@/components/ui/toast";
 import { useDbStatus } from "@/hooks/useDbStatus";
+import { ProfilePhotoSettings } from "@/components/profile/ProfilePhotoSettings";
+import { fileToAvatarDataUrl } from "@/lib/profileImage";
 import type { Profile } from "@/types";
 
 export function Settings() {
@@ -23,6 +25,10 @@ export function Settings() {
   const { toast } = useToast();
   const { items: resumes, upsert: upsertResume } = useResumes();
   const [form, setForm] = useState<Partial<Profile>>(profile ?? {});
+
+  useEffect(() => {
+    if (profile) setForm(profile);
+  }, [profile]);
   const [gmailToken, setGmailToken] = useState<string | null>(
     () => localStorage.getItem("pathfinder-gmail-token"),
   );
@@ -36,6 +42,28 @@ export function Settings() {
       window.history.replaceState(null, "", window.location.pathname);
     }
   }, []);
+
+  const saveAvatar = async (file: File) => {
+    if (!user) return;
+    try {
+      const avatar_url = await fileToAvatarDataUrl(file);
+      setForm((f) => ({ ...f, avatar_url }));
+      if (dataMode === "cloud" && supabase) {
+        const { error } = await supabase
+          .from("profiles")
+          .upsert({ id: user.id, avatar_url, updated_at: new Date().toISOString() });
+        if (error) throw error;
+      } else {
+        const data = localStore.get();
+        data.profile = { ...data.profile!, id: user.id, avatar_url } as Profile;
+        localStore.set(data);
+      }
+      await refreshProfile();
+      toast("Profile photo updated", "success");
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Upload failed");
+    }
+  };
 
   const saveProfile = async () => {
     try {
@@ -77,7 +105,12 @@ export function Settings() {
         <CardHeader>
           <CardTitle>Account</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
+          <ProfilePhotoSettings
+            avatarUrl={form.avatar_url}
+            displayName={form.display_name ?? user?.email ?? "User"}
+            onUpload={saveAvatar}
+          />
           <div className="space-y-2">
             <Label>Display Name</Label>
             <Input
@@ -115,6 +148,23 @@ export function Settings() {
               value={form.target_company ?? ""}
               onChange={(e) => setForm({ ...form, target_company: e.target.value })}
             />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Current Position</Label>
+              <Input
+                value={form.current_position ?? ""}
+                onChange={(e) => setForm({ ...form, current_position: e.target.value })}
+                placeholder="Software Engineer"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Current Company</Label>
+              <Input
+                value={form.current_company ?? ""}
+                onChange={(e) => setForm({ ...form, current_company: e.target.value })}
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label>LinkedIn URL</Label>

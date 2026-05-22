@@ -14,6 +14,8 @@ export interface Profile {
   target_role: string | null;
   target_company: string | null;
   linkedin_url: string | null;
+  current_company: string | null;
+  current_position: string | null;
 }
 
 export interface Company {

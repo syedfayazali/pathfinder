@@ -10,6 +10,8 @@ create table if not exists public.profiles (
   target_role text,
   target_company text,
   linkedin_url text,
+  current_company text,
+  current_position text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

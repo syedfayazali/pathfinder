@@ -38,3 +38,17 @@ body {
 #root {
   min-height: 100vh;
 }
+
+.glass {
+  background: oklch(0.16 0.015 260 / 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid oklch(0.32 0.025 260 / 0.45);
+  box-shadow: 0 4px 24px oklch(0 0 0 / 0.15);
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.35 0.08 280 / 0.25), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, oklch(0.25 0.06 250 / 0.12), transparent);
+}
